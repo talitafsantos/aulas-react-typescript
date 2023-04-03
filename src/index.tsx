@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { App } from './App';
+import { App } from './app/App';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(
@@ -12,18 +12,3 @@ root.render(
   </React.StrictMode>
 );
 reportWebVitals();
-
-// export const Routes = () => {
-//   return (
-//     <BrowserRouter>
-//     <Switch>
-//       <Route path="/entrar" element={<Login />} />
-//       <Route path="/entrar" element={<Dashboard />} />
-
-//       <Route path="*" element={<Navigate to="/pagina-inicial" />} />
-
-
-//     </Switch>
-//     </BrowserRouter>
-//   )
-// }
