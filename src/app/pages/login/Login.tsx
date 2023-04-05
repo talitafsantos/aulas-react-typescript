@@ -1,6 +1,7 @@
 //import { useNavigate } from "react-router-dom"
 
-import { useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
+import { InputLogin } from "./components/InputLogin";
 
 
 export const Login = () => {
@@ -10,31 +11,47 @@ export const Login = () => {
     //     navigate('/pagina-inicial');
     // }
 
+    //const inputPasswordRef = useRef<HTMLInputElement>(null);
+
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
 
-    const handleEntrar = () => {
+    const emailLength = useMemo(() => {
+        return email.length*1000;
+    }, [email.length]);
+
+    const handleEntrar = useCallback (() => {
         console.log(email);
         console.log(senha);
-
-    }
+    }, [email, senha]);
 
     return (
-        <div>
-          <form>
-            <label>
-                <span>Email</span>
-                <input value={email} onChange={e => setEmail(e.target.value)}/>
-            </label>
+    <div>
+        <form>
 
-            <label>
+            <p>Qtd de caracteres email: {emailLength}</p>
+
+            <InputLogin
+                label="Email"
+                value={email}
+                onChange={newValue => setEmail(newValue)}
+                //onPressEnter={() => inputPasswordRef.current?.focus()}
+            />
+
+            <InputLogin
+                type="password"
+                label="Senha"
+                value={senha}
+                onChange={newValue => setSenha(newValue)}
+            />
+
+            {/* <label>
                 <span>Senha</span>
-                <input type="password" value={senha} onChange={e => setSenha(e.target.value)}/>
-            </label>
-            <button type="button" onClick={handleEntrar}>
-                Entrar
-            </button>
-          </form>
-        </div>
+                <input type="password" value={senha} onChange={e => setSenha(e.target.value)} ref={inputPasswordRef}/>
+            </label> */}
+
+                <button type="button" onClick={handleEntrar}>Entrar</button>
+        </form>
+    </div>
     )
 }
