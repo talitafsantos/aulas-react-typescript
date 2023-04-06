@@ -3,6 +3,7 @@ import { Routes } from "./routes";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers"
 import { AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs"
 import "dayjs/locale/pt-br"
+import { UsuarioLogadoProvider } from "./shared/contexts";
 
 
 interface ICustomLocalizationProps {
@@ -21,10 +22,15 @@ export const App = () => {
   return (
   
     <div className="App">
-      <CustomLocalization>
-        <DatePicker />
-      </CustomLocalization>
-      <Routes />
+      <UsuarioLogadoProvider>
+        <Routes />
+      </UsuarioLogadoProvider>
+      
+      <div>
+        <CustomLocalization>
+          <DatePicker />
+        </CustomLocalization>
+      </div>
     </div>
   );
 }

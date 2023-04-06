@@ -1,18 +1,15 @@
-//import { useNavigate } from "react-router-dom"
-
-import { useCallback, useMemo, useRef, useState } from "react"
+import { useCallback, useContext, useMemo, useRef, useState } from "react"
 import { InputLogin } from "./components/InputLogin";
+import { ButtonLogin } from "./components/ButtonLogin";
+import { UsuarioLogadoContext } from "../../shared/contexts";
 
 
 export const Login = () => {
-    // let navigate = useNavigate();
+    
+    const inputPasswordRef = useRef<HTMLInputElement>(null);
 
-    // const handleClick = () => {
-    //     navigate('/pagina-inicial');
-    // }
-
-    //const inputPasswordRef = useRef<HTMLInputElement>(null);
-
+    const { nomeUsuario } = useContext(UsuarioLogadoContext);
+    
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
 
@@ -28,29 +25,26 @@ export const Login = () => {
     return (
     <div>
         <form>
-
             <p>Qtd de caracteres email: {emailLength}</p>
+            <p>{nomeUsuario}</p>
 
             <InputLogin
                 label="Email"
                 value={email}
                 onChange={newValue => setEmail(newValue)}
-                //onPressEnter={() => inputPasswordRef.current?.focus()}
+                onPressEnter={() => inputPasswordRef.current?.focus()}
             />
 
             <InputLogin
                 type="password"
                 label="Senha"
                 value={senha}
+                ref={inputPasswordRef}
                 onChange={newValue => setSenha(newValue)}
             />
+                {/* <button type="button" onClick={handleEntrar}>Entrar</button> */}
 
-            {/* <label>
-                <span>Senha</span>
-                <input type="password" value={senha} onChange={e => setSenha(e.target.value)} ref={inputPasswordRef}/>
-            </label> */}
-
-                <button type="button" onClick={handleEntrar}>Entrar</button>
+                <ButtonLogin type="button" onClick={handleEntrar}>Entrar</ButtonLogin>
         </form>
     </div>
     )
