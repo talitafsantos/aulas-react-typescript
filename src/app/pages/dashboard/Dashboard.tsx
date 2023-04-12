@@ -1,70 +1,102 @@
-import { useCallback, useState } from "react";
-
-interface ITarefa {
-    id: number;
-    title: string;
-    isCompleted: boolean;
-}
+import { useCallback, useEffect, useState } from "react";
+import { ITarefa, TarefasService } from "../../shared/services/api/tarefas/TarefasService";
+import { ApiException } from "../../shared/services/api/ApiException";
 
 export const Dashboard = () => {
 
-    const [lista, setLista] = useState<ITarefa[]>([]);
+const [lista, setLista] = useState<ITarefa[]>([]);
 
-    const handleInputKeyDown: React.KeyboardEventHandler<HTMLInputElement> = useCallback ((e) => {
-        if (e.key === "Enter") {
-            if (e.currentTarget.value.trim().length === 0) return;
+useEffect(() => {
+    TarefasService.getAll()
+    .then((result) => {
 
-            const value = e.currentTarget.value;
-
-            e.currentTarget.value = "";
-
-            setLista((oldLista) => {
-                if (oldLista.some((ListItem) => ListItem.title === value)) return oldLista;
-
-                return [...oldLista,
-                    {
-                        id: oldLista.length,
-                        title: value,
-                        isCompleted: false
-                    }
-                ];
-            });
+        if(result instanceof ApiException) {
+            alert(result.message);
+        } else {
+            setLista(result);
         }
+    })
+}, []);
 
-    },[]);
+const handleInputKeyDown: React.KeyboardEventHandler<HTMLInputElement> = useCallback ((e) => {
+    if (e.key === "Enter") {
+        if (e.currentTarget.value.trim().length === 0) return;
 
-    return (
-        <div>
-            <p>Lista</p>
+        const value = e.currentTarget.value;
 
-            <input onKeyDown={handleInputKeyDown}/>
+        e.currentTarget.value = "";
 
-            <p>{lista.filter((listItem) => listItem.isCompleted).length}</p>
+        if (lista.some((ListItem) => ListItem.title === value)) return;
 
-            <ul>
-                {lista.map((listItem)=> {
-                    return <li key={listItem.id}>
-                        < input type="checkbox"
-                        checked={listItem.isCompleted}
-                        onChange={() => {
-                            setLista(oldLista => {
-                                return oldLista.map(oldListItem => {
-                                    const newIsCompleted = oldListItem.title === listItem.title
-                                    ? !oldListItem.isCompleted
-                                    :oldListItem.isCompleted;
+        TarefasService.create({title: value, isCompleted: false})
+        .then((result) => {
+            if(result instanceof ApiException) {
+                alert(result.message);
+            } else {
+                setLista((oldLista) => [...oldLista,result]);
+            }
+        });
+    }
+},[lista]);
 
-                                    return {
-                                        ...oldListItem,
-                                        isSelected: newIsCompleted
-                                    };
-                                });
-                            });
-                        }}
-                        />
-                        {listItem.title}</li>
-                })}
-            </ul>
+const handleToggleComplete = useCallback((id: number) => {
 
-        </div>
-    )
+    const tarefaToUpdate = lista.find((tarefa) => tarefa.id === id);
+    if (!tarefaToUpdate) return;
+
+    TarefasService.updateById(id, {
+        ...tarefaToUpdate,
+        isCompleted: !tarefaToUpdate.isCompleted,
+    })
+    .then((result) => {
+        if(result instanceof ApiException) {
+            alert(result.message);
+        } else {
+        setLista(oldLista => {
+            return oldLista.map(oldListItem => {
+                if (oldListItem.id === id) return result;
+                return oldListItem;
+                });
+            });
+            }
+        });
+    }, [lista]);
+
+    const handleDelete = useCallback((id: number) => {
+        TarefasService.deleteById(id)
+        .then((result) => {
+            if (result instanceof ApiException) {
+                alert(result.message);
+            } else {
+                setLista(oldLista => {
+                    return oldLista.filter(oldListItem => oldListItem.id !== id);
+                });
+            }
+        });
+    }, []);
+
+return (
+    <div>
+        <p>Lista</p>
+
+        <input onKeyDown={handleInputKeyDown}/>
+
+        <p>{lista.filter((listItem) => listItem.isCompleted).length}</p>
+
+        <ul>
+            {lista.map((listItem)=> {
+                return <li key={listItem.id}>
+                    < input type="checkbox"
+                    checked={listItem.isCompleted}
+                    onChange={() => handleToggleComplete(listItem.id)}
+                    />
+                    {listItem.title}
+                    
+                    <button onClick={() => handleDelete(listItem.id)}>Apagar</button>
+                    </li>
+            })}
+        </ul>
+
+    </div>
+)
 }

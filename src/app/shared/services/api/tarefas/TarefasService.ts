@@ -2,7 +2,7 @@ import { Api } from "../ApiConfig";
 import { ApiException } from "../ApiException";
 
 
-interface ITarefa {
+export interface ITarefa {
     id: number;
     title: string;
     isCompleted: boolean;
@@ -20,7 +20,7 @@ const getAll = async ():Promise<ITarefa[] | ApiException> => {
 
 const getById = async (id: number): Promise<ITarefa | ApiException> => {
     try {
-        const { data } = await Api().get(`"/tarefas/${id}"`);
+        const { data } = await Api().get(`/tarefas/${id}`);
         return data;
         
     } catch (error: any) {
@@ -40,7 +40,7 @@ const create = async (dataToCreate: Omit<ITarefa, "id">): Promise<ITarefa | ApiE
 
 const updateById = async (id: number, dataToUpdate: ITarefa): Promise<ITarefa | ApiException> => {
     try {
-        const { data } = await Api().put(`"/tarefas/${id}"`, dataToUpdate);
+        const { data } = await Api().put(`/tarefas/${id}`, dataToUpdate);
         return data;
         
     } catch (error: any) {
@@ -50,7 +50,7 @@ const updateById = async (id: number, dataToUpdate: ITarefa): Promise<ITarefa | 
 
 const deleteById = async (id: number): Promise<undefined | ApiException> => {
     try {
-        const { data } = await Api().delete(`"/tarefas/${id}"`);
+        const { data } = await Api().delete(`/tarefas/${id}`);
         return data;
         
     } catch (error: any) {
